@@ -38,7 +38,7 @@
 
     //import database
     include("../connection.php");
-
+    $keyword=@$_POST["search"]??"";
     
     ?>
     <div class="container">
@@ -103,30 +103,8 @@
                         
                         <form action="" method="post" class="header-search">
 
-                            <input type="search" name="search" class="input-text header-searchbar" placeholder="Search Doctor name or Email" list="doctors">&nbsp;&nbsp;
-                            
-                            <?php
-                            $sort_order = "";
-    if (isset($_GET['sort']) && $_GET['sort'] == 'name_asc') {
-        $sort_order = "ORDER BY docname ASC";
-    }
-    $sqlmain = "SELECT * FROM doctors $sort_order";
-    $result = $database->query($sqlmain);
-                                echo '<datalist id="doctors">';
-                                $list11 = $database->query("select  docname,docemail from  doctor;");
+                            <input type="search" name="search" class="input-text header-searchbar" placeholder="Search Doctor name or Email" list="doctors" value="<?= $keyword; ?>">&nbsp;&nbsp;
 
-                                for ($y=0;$y<$list11->num_rows;$y++){
-                                    $row00=$list11->fetch_assoc();
-                                    $d=$row00["docname"];
-                                    $c=$row00["docemail"];
-                                    echo "<option value='$d'><br/>";
-                                    echo "<option value='$c'><br/>";
-                                };
-
-                            echo ' </datalist>';
-?>
-                            
-                       
                              <input type="Submit" value="Search" class="login-btn btn-primary btn" style="padding-left: 25px;padding-right: 25px;padding-top: 10px;padding-bottom: 10px;">
                         
                         </form>
@@ -155,18 +133,22 @@
                 
                 <tr>
                     <td colspan="4" style="padding-top:10px;">
-                        <p class="heading-main12" style="margin-left: 45px;font-size:18px;color:rgb(49, 49, 49)">All Doctors (<?php echo $list11->num_rows; ?>)</p>
-                    </td>
+                        </td>
                     
                 </tr>
                 <?php
-                 
+                $sort_order = "";
+                $sortBy= @$_GET['sort_by']??null;
+                $sortAsc= @$_GET['sort_asc']=='true'??false;
+                if ($sortBy){
+                    $sort_order = "ORDER BY $sortBy ".($sortAsc?' ASC ':' DESC ');
+                }
                     if($_POST){
                         $keyword=$_POST["search"];
 
-                        $sqlmain= "select * from doctor where docname like'$keyword%'";
+                        $sqlmain= "select * from doctor where docname like'$keyword%' $sort_order";
                     }else{
-                        $sqlmain= "select * from doctor order by docid desc";
+                        $sqlmain= "select * from doctor $sort_order";
 
                     }
 
@@ -183,10 +165,18 @@
                         <tr>
                             
                                <th class="table-headin">
-    Doctor Name 
-    <a href="?sort=name_asc" style="text-decoration: none;">
-        &#x25B2; <!-- Upward arrow -->
-    </a>
+    Doctor Name
+    <?php if($sortAsc):?>
+        <a href="?sort_by=docname&sort_asc=false" style="text-decoration: none;">
+            &#8593; <!-- Upward arrow -->
+        </a>
+    <?php else:?>
+        <a href="?sort_by=docname&sort_asc=true" style="text-decoration: none;">
+            &#8595;
+        </a>
+    <?php endif;?>
+
+
     
 </th>
 

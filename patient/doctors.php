@@ -112,7 +112,7 @@
                             
                             <?php
                                 echo '<datalist id="doctors">';
-                                $list11 = $database->query("select  docname,docemail from  doctor;");
+                                $list11 = @$database->query("select  docname, docemail from  doctor;");
 
                                 for ($y=0;$y<$list11->num_rows;$y++){
                                     $row00=$list11->fetch_assoc();
